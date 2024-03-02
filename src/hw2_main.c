@@ -38,6 +38,9 @@ FILE *getFile(char *filePath, char task );
 void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outputFileType,  int startingRow, int startingCol,  int copiedFileWidth, int copiedFileHeight);
 int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int copiedWidthRegion, int copiedHeightRegion);
 void clonePixels(FILE *file, int fileType);
+void loadAndSave( FILE *inpFile , FILE *outpFile , int inputFileType, int outputFileType);
+void saveFile(FILE * outputFile, int inputFileType, int outputFileType);
+
 
 bool splitArgument(char *argument, char *option){
     if (argument == NULL) {
@@ -579,126 +582,27 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
     return copiedPixels;
 }
 
-int* DEPRICATEDcopyPixels(FILE *file, int fileType, int startingRow, int startingCol, int copiedWidthRegion, int copiedHeightRegion) {
-    int width, height, r, g, b;
-    copiedPixelsLen =  copiedWidthRegion * copiedHeightRegion * 3;
-    int* copiedPixels  = (int*)malloc(copiedPixelsLen * sizeof(int));
-    int index = 0;
-    if (fileType == PPM) {
-        fscanf(file, "%*s %d %d %*d", &width, &height);
-        if (copiedPixels == NULL) {
-            printf("Unable to allocate space\n");
-            return NULL;
-        }
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                fscanf(file, "%d %d %d", &r, &g, &b);           
-                if (row >= startingRow && row < startingRow + copiedHeightRegion && col >= startingCol && col < startingCol + copiedWidthRegion) { 
-                    copiedPixels[index] = r;
-                    copiedPixels[index + 1] = g;
-                    copiedPixels[index + 2] = b;
-                    index += 3;
-                } 
-            }
-        } 
-
- 
-    } 
-    else if (fileType == SBU) {
-        colorTableLen = 0;
-        fscanf(file, "%*s %d %d %d", &width, &height, &colorTableLen);
-        int tempPixels[width * height * PIXEL_LENGTH * sizeof(int)];
-        
-        colorTable = malloc(colorTableLen * sizeof(int));
-        for(int i = 0; i < colorTableLen; i++){
-            colorTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
-        }
-        
-        for (int i = 0; i < colorTableLen; i++) {
-            fscanf(file, "%d %d %d", &r, &g, &b);
-            colorTable[i][0] = r;
-            colorTable[i][1] = g;
-            colorTable[i][2] = b;
-        }
-
-        char buffer[20];
-        int pixelsArrLen = 0;
-        while (fscanf(file, "%s", buffer) == 1 && pixelsArrLen < width * height) {
-            if (buffer[0] == '*') {
-                int repeats, currentColorIndex;
-                sscanf(buffer, "*%d", &repeats);
-                fscanf(file, "%d", &currentColorIndex);
-                for (int i = 0; i < repeats; i++) {
-                    index = pixelsArrLen * PIXEL_LENGTH;
-                    tempPixels[index] = colorTable[currentColorIndex][0];
-                    tempPixels[index + 1] = colorTable[currentColorIndex][1];
-                    tempPixels[index + 2] = colorTable[currentColorIndex][2];
-                    
-                    pixelsArrLen++;
-                }
-            } else {
-                int currentColorIndex = atoi(buffer);
-                index = pixelsArrLen * PIXEL_LENGTH;
-                tempPixels[index] = colorTable[currentColorIndex][0];
-                tempPixels[index + 1] = colorTable[currentColorIndex][1];
-                tempPixels[index + 2] = colorTable[currentColorIndex][2];
-
-                pixelsArrLen++;
-            }
-        }
-
-        int tempPixelCt = 0;
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {           
-                if (row >= startingRow && row < startingRow + copiedHeightRegion && col >= startingCol && col < startingCol + copiedWidthRegion) { 
-                    copiedPixels[index] = tempPixels[tempPixelCt];
-                    copiedPixels[index + 1] = tempPixels[tempPixelCt + 1];
-                    copiedPixels[index + 2] = tempPixels[tempPixelCt + 2];
-                    index += 3;
-                } 
-                tempPixelCt++;
-            }
-        }  
-    }
-   rewind(file);
-   return copiedPixels;
+void loadAndSave( FILE* inpFile , FILE *outpFile , int inputFileType, int outputFileType){
+    clonePixels(inpFile, inputFileType);
+    saveFile(outpFile, inputFileType, outputFileType);
 }
 
-void DEPRICATEDpastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outputFileType,  int startingRow, int startingCol,  int copiedFileWidth, int copiedFileHeight, int copiedWidthRegion, int copiedHeightRegion){
+void saveFile(FILE * outputFile, int inputFileType, int outputFileType ){
     int r, g, b;
     if(outputFileType == PPM){ 
-        fprintf(outputFile, "P3\n%d %d\n255\n", copiedFileWidth, copiedFileHeight);
-        for (int row = 0; row < copiedFileHeight; row++) { 
-            for (int col = 0; col < copiedFileWidth; col++) {
-                if (row >= startingRow && row < startingRow + copiedHeightRegion && col >= startingCol && col < startingCol + copiedWidthRegion) {
-                    int copiedIndex = ((row - startingRow) * copiedWidthRegion + (col - startingCol)) * PIXEL_LENGTH;
-                    if (copiedIndex < copiedPixelsLen) {
-                        fprintf(outputFile, "%d %d %d ", copiedPixels[copiedIndex], copiedPixels[copiedIndex + 1], copiedPixels[copiedIndex + 2]);
-                    }
-                } 
-                else {
-                    int index = (row * copiedFileWidth + col) * PIXEL_LENGTH;
-                    fprintf(outputFile, "%d %d %d ", originalPixels[index], originalPixels[index + 1], originalPixels[index + 2]);
-                }
+        fprintf(outputFile, "P3\n%d %d\n255\n", backupWidth, backupHeight);
+        for (int row = 0; row < backupHeight; row++) { 
+            for (int col = 0; col < backupWidth; col++) {
+                int index = (row * backupWidth + col) * PIXEL_LENGTH;
+                fprintf(outputFile, "%d %d %d ", originalPixels[index], originalPixels[index + 1], originalPixels[index + 2]);
+
             }
             fprintf(outputFile, "\n");
         }
     }
-    else if(outputFileType == SBU){
-        for (int row = 0; row < copiedFileHeight; row++) { //recheck
-            for (int col = 0; col < copiedFileWidth; col++) {
-                int index = (row * copiedFileWidth + col) * PIXEL_LENGTH;
-                if (row >= startingRow && row < startingRow + copiedHeightRegion && col >= startingCol && col < startingCol + copiedWidthRegion) {
-                    int copiedIndex = ((row - startingRow) * copiedWidthRegion + (col - startingCol)) * PIXEL_LENGTH;
-                    if (copiedIndex < copiedPixelsLen) {
-                        originalPixels[index] = copiedPixels[copiedIndex];
-                        originalPixels[index+1] = copiedPixels[copiedIndex+1];
-                        originalPixels[index+2] = copiedPixels[copiedIndex+2];
-                    }
-                } 
-            }
-        }
-       if (inputFileType == PPM) {
+    else if(outputFileType == SBU){       
+
+        if (inputFileType == PPM) {
             colorTable = NULL;
             colorTableLen = 0;
             
@@ -721,7 +625,7 @@ void DEPRICATEDpastePixels(FILE *outputFile, int*copiedPixels, int inputFileType
             }
         }
         
-        fprintf(outputFile, "SBU\n%d %d\n%d\n", copiedFileWidth, copiedFileHeight, colorTableLen);
+        fprintf(outputFile, "SBU\n%d %d\n%d\n", backupWidth, backupHeight, colorTableLen);
         for (int i = 0; i < colorTableLen; i++) {
             fprintf(outputFile, "%d %d %d ", colorTable[i][0], colorTable[i][1], colorTable[i][2]);
         }
@@ -782,50 +686,11 @@ int main(int argc, char **argv) {
         printf("Invalid input, return value is not 0. Return value is: %d\n" , returnValue);
         return returnValue;
     }
-    int *copiedPixels;
-
-  
-    if(containsC == true){ 
-        FILE *cloneFile = getFile(inputFilePath, 'r');
-        if(checkFileType(inputFilePath) == SBU){
-            clonePixels(cloneFile, SBU);
-            fclose(cloneFile);
-            FILE *inputFile = getFile(inputFilePath, 'r');
-            copiedPixels = copyPixels(inputFile, SBU, elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
-            fclose(inputFile);
-        }
-        else{
-            clonePixels(cloneFile, PPM);
-            fclose(cloneFile);
-            FILE *inputFile = getFile(inputFilePath, 'r');
-            copiedPixels = copyPixels(inputFile, PPM, elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
-            fclose(inputFile);
-
-        }   
-    }
-    if(containsP == true){ //paste
-        FILE *outputFile = getFile(outputFilePath, 'w');
-        if(checkFileType(outputFilePath) == SBU){
-            if(checkFileType(inputFilePath) == PPM){
-                pastePixels(outputFile, copiedPixels, PPM, SBU, elementsOfP[0], elementsOfP[1], backupWidth, backupHeight); //potential vulnerability
-            }   
-            else{
-                pastePixels(outputFile, copiedPixels, SBU, SBU, elementsOfP[0], elementsOfP[1], backupWidth, backupHeight); //potential vulnerability
-            }
-        }
-           
-        else{
-            if(checkFileType(inputFilePath) == PPM){
-                pastePixels(outputFile, copiedPixels, PPM, PPM, elementsOfP[0], elementsOfP[1], backupWidth, backupHeight); //potential vulnerability
-            }   
-            else{
-                pastePixels(outputFile, copiedPixels, SBU, PPM, elementsOfP[0], elementsOfP[1], backupWidth, backupHeight); //potential vulnerability
-            }
-        }
-        fclose(outputFile);    
-    }
-    if(containsR == true){ //print
-        //logic
-    }
+    FILE *inputFile = getFile(inputFilePath, 'r');
+    FILE *outputFile = getFile(outputFilePath, 'w');
+    loadAndSave(inputFile, outputFile, checkFileType(inputFilePath), checkFileType(outputFilePath));
+    fclose(inputFile);
+    fclose(outputFile);
+    
     return 0;
 }
