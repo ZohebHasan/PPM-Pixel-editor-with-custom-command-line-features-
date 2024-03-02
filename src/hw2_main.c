@@ -28,6 +28,7 @@ int colorTableLen = 0;
 int **colorTable;
 int originalPixelsLen = 0;
 int effectiveWidthRegion, effectiveHeightRegion;
+int* copiedPixels; 
 
 bool containsRarg(int argumentsLength, char **argumentsArray);
 int checkArgs(int argumentsLength, char **argumentsArray);
@@ -35,8 +36,8 @@ int checkFileType(char *filePath);
 bool splitArgument(char *argument, char *option);
 bool validFile(char *filePath, char option);
 FILE *getFile(char *filePath, char task );
-void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outputFileType,  int startingRow, int startingCol,  int copiedFileWidth, int copiedFileHeight);
-int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int copiedWidthRegion, int copiedHeightRegion);
+void pastePixels(FILE *outputFile, int inputFileType, int outputFileType,  int startingRow, int startingCol,  int copiedFileWidth, int copiedFileHeight);
+void copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int copiedWidthRegion, int copiedHeightRegion);
 void clonePixels(FILE *file, int fileType);
 void loadAndSave( FILE *inpFile , FILE *outpFile , int inputFileType, int outputFileType);
 void saveFile(FILE * outputFile, int inputFileType, int outputFileType);
@@ -322,7 +323,7 @@ void clonePixels(FILE *file, int fileType){
     rewind(file);
 }
 
-void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outputFileType,  int startingRow, int startingCol,  int copiedFileWidth, int copiedFileHeight){
+void pastePixels(FILE *outputFile, int inputFileType, int outputFileType,  int startingRow, int startingCol,  int copiedFileWidth, int copiedFileHeight){
     int r, g, b;
     if(outputFileType == PPM){ 
         fprintf(outputFile, "P3\n%d %d\n255\n", copiedFileWidth, copiedFileHeight);
@@ -436,9 +437,9 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
     rewind(outputFile);
 }
 
-int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int copiedWidthRegion, int copiedHeightRegion) {
+void copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int copiedWidthRegion, int copiedHeightRegion) {
     int width, height, r, g, b;
-    int* copiedPixels; 
+   
     int index = 0;
     if (fileType == PPM) {  
         index = 0;
@@ -530,16 +531,12 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
     }
 
     rewind(file); 
-    return copiedPixels;
 }
 
 void loadAndSave( FILE* inpFile , FILE *outpFile , int inputFileType, int outputFileType){
     clonePixels(inpFile, inputFileType);
     saveFile(outpFile, inputFileType, outputFileType);
-    // (void) inpFile;
-    // (void) inputFileType;
-    // (void) outpFile;
-    // (void) outputFileType;
+
 }
 
 void saveFile(FILE * outputFile, int inputFileType, int outputFileType ){
@@ -649,15 +646,15 @@ int main(int argc, char **argv) {
 
     // clonePixels(inputFile, checkFileType(inputFilePath));
 
-    int *copiedPixels;
+
     if(containsC == true){ 
         FILE *inpFile = getFile(inputFilePath, 'r');
-        copiedPixels = copyPixels(inpFile, checkFileType(inputFilePath), elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
+        copyPixels(inpFile, checkFileType(inputFilePath), elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
         fclose(inpFile);
     }
     if(containsP == true){ 
         FILE *outpFile = getFile(outputFilePath, 'w');
-        pastePixels(outpFile, copiedPixels, checkFileType(inputFilePath), checkFileType(outputFilePath), elementsOfP[0], elementsOfP[1], backupWidth, backupHeight);  
+        pastePixels(outpFile, checkFileType(inputFilePath), checkFileType(outputFilePath), elementsOfP[0], elementsOfP[1], backupWidth, backupHeight);  
         fclose(outpFile);
     }
     if(containsR == true){ //print
@@ -669,8 +666,8 @@ int main(int argc, char **argv) {
         free(colorTable[i]);
     }
     free(colorTable);
-    if(copiedPixels != NULL){
-        free(copiedPixels);
-    }
+    // if(copiedPixels != NULL){
+    //     free(copiedPixels);
+    // }
     return 0;
 }
