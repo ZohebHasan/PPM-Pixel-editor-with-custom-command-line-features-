@@ -67,7 +67,7 @@ bool splitArgument(char *argument, char *option){
       else if(strcmp(option, "p") == 0){
           while (token != NULL) {
               if (index < 2) {
-                  elementsOfC[index] = atoi(token); 
+                  elementsOfP[index] = atoi(token); 
               }
               token = strtok(NULL, ",");
               index++;
@@ -125,7 +125,6 @@ bool validFile(char *filePath, char option){
   return true;
 }
 
-
 FILE *getFile(char *filePath, char task ) { //gimmick
     FILE *file = NULL;
     if(validFile(filePath, task) == true){ 
@@ -144,7 +143,6 @@ bool containsRarg(int argumentsLength, char **argumentsArray) {
     }
     return true; 
 }
-
 
 int checkArgs(int argumentsLength, char **argumentsArray) {
     int option;
