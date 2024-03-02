@@ -584,7 +584,7 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
 
 void loadAndSave( FILE* inpFile , FILE *outpFile , int inputFileType, int outputFileType){
     clonePixels(inpFile, inputFileType);
-    // saveFile(outpFile, inputFileType, outputFileType);
+    saveFile(outpFile, inputFileType, outputFileType);
     // (void) inpFile;
     // (void) inputFileType;
     (void) outpFile;
@@ -693,8 +693,8 @@ int main(int argc, char **argv) {
     FILE *inputFile = getFile(inputFilePath, 'r');
     FILE *outputFile = getFile(outputFilePath, 'w');
     loadAndSave(inputFile, outputFile, checkFileType(inputFilePath), checkFileType(outputFilePath));
-    // fclose(inputFile);
-    // fclose(outputFile);
+    fclose(inputFile);
+    fclose(outputFile);
 
     return 0;
 }
