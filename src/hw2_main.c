@@ -467,21 +467,21 @@ void copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
        
     
     else if (fileType == SBU) {
-        colorTableLen = 0;
-        fscanf(file, "%*s %d %d %d", &width, &height, &colorTableLen);
+        int clrTableLen = 0;
+        fscanf(file, "%*s %d %d %d", &width, &height, &clrTableLen);
         int tempPixels[width * height * PIXEL_LENGTH * sizeof(int)];
         
-        colorTable = malloc(colorTableLen * sizeof(int *));
+        int **clrTable = malloc(clrTableLen * sizeof(int *));
 
-        for(int i = 0; i < colorTableLen; i++){
-            colorTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
+        for(int i = 0; i < clrTableLen; i++){
+            clrTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
         }
         
-        for (int i = 0; i < colorTableLen; i++) {
+        for (int i = 0; i < clrTableLen; i++) {
             fscanf(file, "%d %d %d", &r, &g, &b);
-            colorTable[i][0] = r;
-            colorTable[i][1] = g;
-            colorTable[i][2] = b;
+            clrTable[i][0] = r;
+            clrTable[i][1] = g;
+            clrTable[i][2] = b;
         }
 
         char buffer[20];
@@ -493,18 +493,18 @@ void copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
                 fscanf(file, "%d", &currentColorIndex);
                 for (int i = 0; i < repeats; i++) {
                     index = pixelsArrLen * PIXEL_LENGTH;
-                    tempPixels[index] = colorTable[currentColorIndex][0];
-                    tempPixels[index + 1] = colorTable[currentColorIndex][1];
-                    tempPixels[index + 2] = colorTable[currentColorIndex][2];
+                    tempPixels[index] = clrTable[currentColorIndex][0];
+                    tempPixels[index + 1] = clrTable[currentColorIndex][1];
+                    tempPixels[index + 2] = clrTable[currentColorIndex][2];
                     
                     pixelsArrLen++;
                 }
             } else {
                 int currentColorIndex = atoi(buffer);
                 index = pixelsArrLen * PIXEL_LENGTH;
-                tempPixels[index] = colorTable[currentColorIndex][0];
-                tempPixels[index + 1] = colorTable[currentColorIndex][1];
-                tempPixels[index + 2] = colorTable[currentColorIndex][2];
+                tempPixels[index] = clrTable[currentColorIndex][0];
+                tempPixels[index + 1] = clrTable[currentColorIndex][1];
+                tempPixels[index + 2] = clrTable[currentColorIndex][2];
 
                 pixelsArrLen++;
             }
@@ -527,6 +527,12 @@ void copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
                 index += 3; 
             }
         } 
+
+    for(int i = 0; i < clrTableLen; i++){
+        free(clrTable[i]);
+    }
+    free(clrTable);
+
     }
 
     rewind(file); 
