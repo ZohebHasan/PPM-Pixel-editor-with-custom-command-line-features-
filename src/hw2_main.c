@@ -707,12 +707,12 @@ int main(int argc, char **argv) {
 
     int *copiedPixels;
     if(containsC == true){ 
-        FILE *inputFile = getFile(inputFilePath, 'r');
+        FILE *inpFile = getFile(inputFilePath, 'r');
         copiedPixels = copyPixels(inputFile, checkFileType(inputFilePath), elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
         fclose(inputFile);
     }
     if(containsP == true){ 
-        FILE *outputFile = getFile(outputFilePath, 'w');
+        FILE *outFile = getFile(outputFilePath, 'w');
         pastePixels(outputFile, copiedPixels, checkFileType(inputFilePath), checkFileType(outputFilePath), elementsOfP[0], elementsOfP[1], backupWidth, backupHeight);  
         fclose(outputFile);
     }
