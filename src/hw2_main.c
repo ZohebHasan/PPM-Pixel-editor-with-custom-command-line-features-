@@ -11,7 +11,7 @@
 
 #define PPM 100
 #define SBU 200
-#define PIXEL_LENGTH 3
+// #define PIXEL_LENGTH 3
 // #define MISSING_ARGUMENT 1
 // #define UNRECOGNIZED_ARGUMENT 2
 // #define DUPLICATE_ARGUMENT 3
@@ -130,6 +130,10 @@ bool validFile(char *filePath, char option){
   }
 
   fclose(file);
+  if(option == 'w') { //experiment;
+    remove(filePath); 
+  }
+  
   return true;
 }
 
