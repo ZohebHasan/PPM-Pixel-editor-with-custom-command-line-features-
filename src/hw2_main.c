@@ -450,8 +450,7 @@ void copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
         copiedPixels = (int*)malloc(copiedPixelsLen * sizeof(int));
         
         if (copiedPixels == NULL) {
-
-            return NULL;
+            return;
         }
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
