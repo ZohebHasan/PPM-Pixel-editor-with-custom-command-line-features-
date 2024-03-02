@@ -331,6 +331,7 @@ void clonePixels(FILE *inputFile, int inputFileType){
         originalPixelsLen *= PIXEL_LENGTH;
     }
     rewind(inputFile);
+    
 }
 
 void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outputFileType,  int startingRow, int startingCol,  int copiedFileWidth, int copiedFileHeight){
@@ -475,7 +476,7 @@ int* copyPixels(FILE *inputFile, int inputFileType, int startingRow, int startin
         fscanf(inputFile, "%*s %d %d %*d", &width, &height);
         effectiveWidthRegion = (startingCol + copiedWidthRegion > width) ? width - startingCol : copiedWidthRegion;
         effectiveHeightRegion = (startingRow + copiedHeightRegion > height) ? height - startingRow : copiedHeightRegion;
-        printf("EffectiveWidthRegion is: %d and Effective Height Region is: %d\n", effectiveWidthRegion, effectiveHeightRegion);
+        // printf("EffectiveWidthRegion is: %d and Effective Height Region is: %d\n", effectiveWidthRegion, effectiveHeightRegion);
         copiedPixelsLen = effectiveWidthRegion * effectiveHeightRegion * PIXEL_LENGTH;
         copiedPixels = (int*)malloc(copiedPixelsLen * sizeof(int));
         
@@ -688,7 +689,6 @@ void saveFile(FILE * outputFile, int inputFileType, int outputFileType ){
         }
     }
     rewind(outputFile);
-
 }
 
 int main(int argc, char **argv) {
@@ -700,19 +700,26 @@ int main(int argc, char **argv) {
     FILE *inputFile = getFile(inputFilePath, 'r');
     FILE *outputFile = getFile(outputFilePath, 'w');
     loadAndSave(inputFile, outputFile, checkFileType(inputFilePath), checkFileType(outputFilePath));
+    fclose(inputFile);
+    fclose(outputFile);
 
+    // clonePixels(inputFile, checkFileType(inputFilePath));
 
     int *copiedPixels;
     if(containsC == true){ 
+        FILE *inputFile = getFile(inputFilePath, 'r');
         copiedPixels = copyPixels(inputFile, checkFileType(inputFilePath), elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
+        fclose(inputFile);
     }
     if(containsP == true){ 
+        FILE *outputFile = getFile(outputFilePath, 'w');
         pastePixels(outputFile, copiedPixels, checkFileType(inputFilePath), checkFileType(outputFilePath), elementsOfP[0], elementsOfP[1], backupWidth, backupHeight);  
+        fclose(outputFile);
     }
     if(containsR == true){ //print
         //logic
     }
-    fclose(inputFile);
-    fclose(outputFile);
+    
+    
     return 0;
 }
