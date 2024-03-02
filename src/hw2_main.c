@@ -663,14 +663,14 @@ int main(int argc, char **argv) {
     if(containsR == true){ //print
         //logic
     }
-    // if(copiedPixels != NULL){
-    //     free(copiedPixels);
-    // }
+
     free(originalPixels);
     for(int i = 0; i < colorTableLen; i++){
         free(colorTable[i]);
     }
     free(colorTable);
-    
+    if(copiedPixels != NULL){
+        free(copiedPixels);
+    }
     return 0;
 }
