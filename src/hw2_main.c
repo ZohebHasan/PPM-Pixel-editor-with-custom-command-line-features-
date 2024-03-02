@@ -257,11 +257,10 @@ int checkArgs(int argumentsLength, char **argumentsArray) {
 void clonePixels(FILE *file, int fileType){
     int width, height;
     int r, g, b;
-   
  
     if (fileType == PPM) {
         fscanf(file, "%*s %d %d %*d", &width, &height);
-        // printf("copiedFileWidth is: %d, copiedFileHeight is: %d\n", width, height);
+  
         backupWidth = width;
         backupHeight = height;
         originalPixels = (int*)malloc(width * height * PIXEL_LENGTH * sizeof(int));
@@ -295,13 +294,6 @@ void clonePixels(FILE *file, int fileType){
             colorTable[i][1] = g;
             colorTable[i][2] = b;
         }
-        // printf("Colortable Length is: %d\n", colorTableLen);
-        // for (int i = 0; i < colorTableLen; i++) {
-        //     for(int j = 0; j < PIXEL_LENGTH; j++){
-        //         printf("Colortable [%d][%d] is: %d ", i, j, colorTable[i][j]);
-        //     }
-        //     printf("\n");
-        // }
         
         char buffer[20];
         
@@ -328,27 +320,13 @@ void clonePixels(FILE *file, int fileType){
             }
         }
         originalPixelsLen *= PIXEL_LENGTH;
-        // // test for backup pixels
-        // temp = 0;
-        // printf("\nBackup pixel is: ");
-        // for(int i = 0 ; i < (width * height * 3 * sizeof(char) ) ; i++){
-        //     if(temp % 9 == 0){
-        //         printf("\n");
-        //     }
-        //     // printf("Copied pixel[%d] is: %d\n ", i, copiedPixels[i]);
-        //     printf("%d ", originalPixels[i]);
-        //     temp++;
-        // }
-        // printf("\n"); 
     }
     rewind(file);
 }
 
 int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int copiedWidthRegion, int copiedHeightRegion) {
     int width, height, r, g, b;
- 
     copiedPixelsLen =  copiedWidthRegion * copiedHeightRegion * 3;
-    printf("CopiedPixelsLen is: %d\n" , copiedPixelsLen);
     int* copiedPixels  = (int*)malloc(copiedPixelsLen * sizeof(int));
     int index = 0;
     if (fileType == PPM) {
@@ -380,9 +358,6 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
         for(int i = 0; i < colorTableLen; i++){
             colorTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
         }
-
-        
-        
         
         for (int i = 0; i < colorTableLen; i++) {
             fscanf(file, "%d %d %d", &r, &g, &b);
@@ -428,20 +403,7 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
                 } 
                 tempPixelCt++;
             }
-        } 
-        // // test for copied pixels
-        // temp = 0;
-        // printf("\nCopied Pixels Length is: %d\n" ,copiedPixelsLen);
-        // printf("Copied Pixels are: ");
-        // for(int i = 0 ; i < copiedPixelsLen ; i++){
-        //     if(temp % 3 == 0){
-        //         printf("\n");
-        //     }
-        //     // printf("Copied pixel[%d] is: %d\n ", i, copiedPixels[i]);
-        //     printf("%d ", copiedPixels[i]);
-        //     temp++;
-        // }
-        // printf("\n");    
+        }  
     }
    rewind(file);
    return copiedPixels;
@@ -451,8 +413,7 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
     int r, g, b;
     if(outputFileType == PPM){ 
         fprintf(outputFile, "P3\n%d %d\n255\n", copiedFileWidth, copiedFileHeight);
-        // printf("=======> File width is: %d and file height is: %d \n", copiedFileWidth,copiedFileHeight);
-        for (int row = 0; row < copiedFileHeight; row++) { //recheck
+        for (int row = 0; row < copiedFileHeight; row++) { 
             for (int col = 0; col < copiedFileWidth; col++) {
                 if (row >= startingRow && row < startingRow + copiedHeightRegion && col >= startingCol && col < startingCol + copiedWidthRegion) {
                     int copiedIndex = ((row - startingRow) * copiedWidthRegion + (col - startingCol)) * PIXEL_LENGTH;
@@ -469,7 +430,6 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
         }
     }
     else if(outputFileType == SBU){
-        // modifying the clone array
         for (int row = 0; row < copiedFileHeight; row++) { //recheck
             for (int col = 0; col < copiedFileWidth; col++) {
                 int index = (row * copiedFileWidth + col) * PIXEL_LENGTH;
@@ -483,24 +443,10 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
                 } 
             }
         }
-        // // test for backup pixels
-        // int temp = 0;
-        // printf("\nPixels after pasting is: ");
-        // for(int i = 0 ; i < (copiedFileWidth * copiedFileHeight * 3 * sizeof(char) ) ; i++){
-        //     if(temp % 9 == 0){
-        //         printf("\n");
-        //     }
-        //     // printf("Copied pixel[%d] is: %d\n ", i, copiedPixels[i]);
-        //     printf("%d ", originalPixels[i]);
-        //     temp++;
-        // }
-        // printf("\n"); 
-
        if (inputFileType == PPM) {
             colorTable = NULL;
             colorTableLen = 0;
             
-            // Iterate over originalPixels to build the color table
             for (int i = 0; i < originalPixelsLen; i += PIXEL_LENGTH) {
                 bool found = false;
                 for (int j = 0; j < colorTableLen; j++) {
@@ -520,25 +466,12 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
             }
         }
         
-        
-        // //testing print tables
-        // printf("Colortable Length is: %d\n", colorTableLen);
-        // for (int i = 0; i < colorTableLen; i++) {
-        //     for(int j = 0; j < PIXEL_LENGTH; j++){
-        //         printf("Colortable [%d][%d] is: %d ", i, j, colorTable[i][j]);
-        //     }
-        //     printf("\n");
-        // }
-
-
-        // Writing SBU file header and color table
         fprintf(outputFile, "SBU\n%d %d\n%d\n", copiedFileWidth, copiedFileHeight, colorTableLen);
         for (int i = 0; i < colorTableLen; i++) {
             fprintf(outputFile, "%d %d %d ", colorTable[i][0], colorTable[i][1], colorTable[i][2]);
         }
         fprintf(outputFile,"\n");
 
-        // Writing compressed pixel data
         
         int lastColorIndex = -1, repeatCount = 0;
         for (int i = 0; i < originalPixelsLen; i += PIXEL_LENGTH) {
@@ -546,7 +479,6 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
             g = originalPixels[i + 1];
             b = originalPixels[i + 2];
 
-            // Find the current color's index in the color table
             int currentColorIndex = -1;
             for (int j = 0; j < colorTableLen; j++) {
                 if (colorTable[j][0] == r && colorTable[j][1] == g && colorTable[j][2] == b) {
@@ -555,13 +487,11 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
                 }
             }
 
-            // Handle errors or proceed with compression logic
             if (currentColorIndex == -1) {
                 fprintf(stderr, "Error: Color not found in color table.\n");
                 continue;
             }
 
-            // Compression logic
             if (currentColorIndex == lastColorIndex) {
                 repeatCount++;
             } 
@@ -579,7 +509,6 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
             }
         }
 
-        // Handle the last sequence
         if (lastColorIndex != -1) {
             if (repeatCount > 1){
                 fprintf(outputFile, "*%d %d", repeatCount, lastColorIndex);
