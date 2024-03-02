@@ -665,8 +665,7 @@ int main(int argc, char **argv) {
         free(colorTable[i]);
     }
     free(colorTable);
-    // if(copiedPixels != NULL){
-    //     free(copiedPixels);
-    // }
+    free(copiedPixels);
+ 
     return 0;
 }
