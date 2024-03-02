@@ -275,50 +275,50 @@ void clonePixels(FILE *file, int fileType){
             originalPixelsLen += 3;
         }      
     } 
-    // else if (fileType == SBU) {
-    //     fscanf(file, "%*s %d %d %d", &width, &height, &colorTableLen);
-    //     backupWidth = width;
-    //     backupHeight = height;
-    //     colorTable = malloc(colorTableLen * sizeof(int));
-    //     for(int i = 0; i < colorTableLen; i++){
-    //         colorTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
-    //     }
-    //     originalPixels = (int*)malloc(width * height * PIXEL_LENGTH * sizeof(int));
+    else if (fileType == SBU) {
+        fscanf(file, "%*s %d %d %d", &width, &height, &colorTableLen);
+        backupWidth = width;
+        backupHeight = height;
+        colorTable = malloc(colorTableLen * sizeof(int *));
+        for(int i = 0; i < colorTableLen; i++){
+            colorTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
+        }
+        originalPixels = (int*)malloc(width * height * PIXEL_LENGTH * sizeof(int));
       
 
-    //     for (int i = 0; i < colorTableLen; i++) {
-    //         fscanf(file, "%d %d %d", &r, &g, &b);
-    //         colorTable[i][0] = r;
-    //         colorTable[i][1] = g;
-    //         colorTable[i][2] = b;
-    //     }
+        for (int i = 0; i < colorTableLen; i++) {
+            fscanf(file, "%d %d %d", &r, &g, &b);
+            colorTable[i][0] = r;
+            colorTable[i][1] = g;
+            colorTable[i][2] = b;
+        }
         
-    //     char buffer[20];
+        char buffer[20];
         
-    //     while (fscanf(file, "%s", buffer) == 1 && originalPixelsLen < width * height) {
-    //         if (buffer[0] == '*') {
-    //             int repeats, currentColorIndex;
-    //             sscanf(buffer, "*%d", &repeats);
-    //             fscanf(file, "%d", &currentColorIndex);
-    //             for (int i = 0; i < repeats; i++) {
-    //                 int index = originalPixelsLen * PIXEL_LENGTH;     
-    //                 originalPixels[index] = colorTable[currentColorIndex][0];
-    //                 originalPixels[index + 1] = colorTable[currentColorIndex][1];
-    //                 originalPixels[index + 2] = colorTable[currentColorIndex][2];
-    //                 originalPixelsLen++;
-    //             }
-    //         } 
-    //         else {
-    //             int currentColorIndex = atoi(buffer);
-    //             int index = originalPixelsLen * PIXEL_LENGTH;
-    //             originalPixels[index] = colorTable[currentColorIndex][0];
-    //             originalPixels[index + 1] = colorTable[currentColorIndex][1];
-    //             originalPixels[index + 2] = colorTable[currentColorIndex][2];
-    //             originalPixelsLen++;
-    //         }
-    //     }
-    //     originalPixelsLen *= PIXEL_LENGTH;
-    // }
+        while (fscanf(file, "%s", buffer) == 1 && originalPixelsLen < width * height) {
+            if (buffer[0] == '*') {
+                int repeats, currentColorIndex;
+                sscanf(buffer, "*%d", &repeats);
+                fscanf(file, "%d", &currentColorIndex);
+                for (int i = 0; i < repeats; i++) {
+                    int index = originalPixelsLen * PIXEL_LENGTH;     
+                    originalPixels[index] = colorTable[currentColorIndex][0];
+                    originalPixels[index + 1] = colorTable[currentColorIndex][1];
+                    originalPixels[index + 2] = colorTable[currentColorIndex][2];
+                    originalPixelsLen++;
+                }
+            } 
+            else {
+                int currentColorIndex = atoi(buffer);
+                int index = originalPixelsLen * PIXEL_LENGTH;
+                originalPixels[index] = colorTable[currentColorIndex][0];
+                originalPixels[index + 1] = colorTable[currentColorIndex][1];
+                originalPixels[index + 2] = colorTable[currentColorIndex][2];
+                originalPixelsLen++;
+            }
+        }
+        originalPixelsLen *= PIXEL_LENGTH;
+    }
     rewind(file);
 }
 
@@ -505,7 +505,7 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
         fscanf(file, "%*s %d %d %d", &width, &height, &colorTableLen);
         int tempPixels[width * height * PIXEL_LENGTH * sizeof(int)];
         
-        colorTable = malloc(colorTableLen * sizeof(int));
+        colorTable = malloc(colorTableLen * sizeof(int *));
 
         for(int i = 0; i < colorTableLen; i++){
             colorTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
