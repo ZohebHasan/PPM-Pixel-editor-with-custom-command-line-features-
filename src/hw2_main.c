@@ -700,14 +700,14 @@ int main(int argc, char **argv) {
 
     int *copiedPixels;
     if(containsC == true){ 
-        FILE *inputFile = getFile(inputFilePath, 'r');
-        copiedPixels = copyPixels(inputFile, checkFileType(inputFilePath), elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
-        fclose(inputFile);
+        FILE *inpFile = getFile(inputFilePath, 'r');
+        copiedPixels = copyPixels(inpFile, checkFileType(inputFilePath), elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
+        fclose(inpFile);
     }
     if(containsP == true){ 
-        FILE *outputFile = getFile(outputFilePath, 'w');
-        pastePixels(outputFile, copiedPixels, checkFileType(inputFilePath), checkFileType(outputFilePath), elementsOfP[0], elementsOfP[1], backupWidth, backupHeight);  
-        fclose(outputFile);
+        FILE *outpFile = getFile(outputFilePath, 'w');
+        pastePixels(outpFile, copiedPixels, checkFileType(inputFilePath), checkFileType(outputFilePath), elementsOfP[0], elementsOfP[1], backupWidth, backupHeight);  
+        fclose(outpFile);
     }
     if(containsR == true){ //print
         //logic
