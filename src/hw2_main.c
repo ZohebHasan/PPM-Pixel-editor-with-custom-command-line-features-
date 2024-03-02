@@ -64,10 +64,10 @@ bool splitArgument(char *argument, char *option){
         }
         return count == 5;
       }
-      else if(strcmp(option, "p") == 0){
+      else if(strcmp(option, "p") == 0){ 
           while (token != NULL) {
               if (index < 2) {
-                  elementsOfP[index] = atoi(token); 
+                  elementsOfP[index] = atoi(token); //changed
               }
               token = strtok(NULL, ",");
               index++;
