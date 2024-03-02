@@ -598,26 +598,15 @@ int main(int argc, char **argv) {
         printf("Invalid input, return value is not 0. Return value is: %d\n" , returnValue);
         return returnValue;
     }
-    else{
-        printf("Input is valid.\n");
-    }
     int *copiedPixels;
 
-    // under the assumption that none of the error codes got triggered
-    if(containsC == true){ //copy
+  
+    if(containsC == true){ 
         FILE *cloneFile = getFile(inputFilePath, 'r');
-        if(cloneFile != NULL){
-            printf("This is after testing the clone file. Clone File is not null\n");
-        }
         if(checkFileType(inputFilePath) == SBU){
             clonePixels(cloneFile, SBU);
             fclose(cloneFile);
             FILE *inputFile = getFile(inputFilePath, 'r');
-            if(inputFile != NULL){
-                printf("This is after testing the input file. Input File is not null\n");
-                printf("Input File Directory is: %s\n" , inputFilePath);
-            }
-
             copiedPixels = copyPixels(inputFile, SBU, elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
             fclose(inputFile);
         }
@@ -625,10 +614,6 @@ int main(int argc, char **argv) {
             clonePixels(cloneFile, PPM);
             fclose(cloneFile);
             FILE *inputFile = getFile(inputFilePath, 'r');
-            if(inputFile != NULL){
-                printf("This is after testing the input file. Input File is not null\n");
-                printf("Input File Directory is: %s\n" , inputFilePath);
-            }
             copiedPixels = copyPixels(inputFile, PPM, elementsOfC[0], elementsOfC[1] , elementsOfC[2], elementsOfC[3]);
             fclose(inputFile);
 
@@ -636,10 +621,6 @@ int main(int argc, char **argv) {
     }
     if(containsP == true){ //paste
         FILE *outputFile = getFile(outputFilePath, 'w');
-        if(outputFile != NULL){
-            printf("This is after testing the output file. Output File is not null\n");
-            printf("Output File Directory is: %s\n" , outputFilePath);
-        }
         if(checkFileType(outputFilePath) == SBU){
             if(checkFileType(inputFilePath) == PPM){
                 pastePixels(outputFile, copiedPixels, PPM, SBU, elementsOfP[0], elementsOfP[1], backupWidth, backupHeight, elementsOfC[2], elementsOfC[3]); //potential vulnerability
