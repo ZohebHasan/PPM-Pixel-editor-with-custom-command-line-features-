@@ -1,6 +1,5 @@
 #include "hw2.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -13,17 +12,6 @@
 #define PPM 100
 #define SBU 200
 #define PIXEL_LENGTH 3
-
-
-// #define MISSING_ARGUMENT 1
-// #define UNRECOGNIZED_ARGUMENT 2
-// #define DUPLICATE_ARGUMENT 3
-// #define INPUT_FILE_MISSING 4
-// #define OUTPUT_FILE_UNWRITABLE 5
-// #define C_ARGUMENT_MISSING 6
-// #define C_ARGUMENT_INVALID 7
-// #define P_ARGUMENT_INVALID 8
-// #define R_ARGUMENT_INVALID 9
 
 
 char *inputFilePath = NULL;
@@ -461,6 +449,7 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
         copiedPixels = (int*)malloc(copiedPixelsLen * sizeof(int));
         
         if (copiedPixels == NULL) {
+
             return NULL;
         }
         for (int row = 0; row < height; row++) {
@@ -478,21 +467,21 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
        
     
     else if (fileType == SBU) {
-        int clrTableLen = 0;
-        fscanf(file, "%*s %d %d %d", &width, &height, &clrTableLen);
+        colorTableLen = 0;
+        fscanf(file, "%*s %d %d %d", &width, &height, &colorTableLen);
         int tempPixels[width * height * PIXEL_LENGTH * sizeof(int)];
         
-        int **clrTable = malloc(clrTableLen * sizeof(int *));
+        colorTable = malloc(colorTableLen * sizeof(int *));
 
-        for(int i = 0; i < clrTableLen; i++){
-            clrTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
+        for(int i = 0; i < colorTableLen; i++){
+            colorTable[i] = malloc(PIXEL_LENGTH * sizeof(int));
         }
         
-        for (int i = 0; i < clrTableLen; i++) {
+        for (int i = 0; i < colorTableLen; i++) {
             fscanf(file, "%d %d %d", &r, &g, &b);
-            clrTable[i][0] = r;
-            clrTable[i][1] = g;
-            clrTable[i][2] = b;
+            colorTable[i][0] = r;
+            colorTable[i][1] = g;
+            colorTable[i][2] = b;
         }
 
         char buffer[20];
@@ -504,18 +493,18 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
                 fscanf(file, "%d", &currentColorIndex);
                 for (int i = 0; i < repeats; i++) {
                     index = pixelsArrLen * PIXEL_LENGTH;
-                    tempPixels[index] = clrTable[currentColorIndex][0];
-                    tempPixels[index + 1] = clrTable[currentColorIndex][1];
-                    tempPixels[index + 2] = clrTable[currentColorIndex][2];
+                    tempPixels[index] = colorTable[currentColorIndex][0];
+                    tempPixels[index + 1] = colorTable[currentColorIndex][1];
+                    tempPixels[index + 2] = colorTable[currentColorIndex][2];
                     
                     pixelsArrLen++;
                 }
             } else {
                 int currentColorIndex = atoi(buffer);
                 index = pixelsArrLen * PIXEL_LENGTH;
-                tempPixels[index] = clrTable[currentColorIndex][0];
-                tempPixels[index + 1] = clrTable[currentColorIndex][1];
-                tempPixels[index + 2] = clrTable[currentColorIndex][2];
+                tempPixels[index] = colorTable[currentColorIndex][0];
+                tempPixels[index + 1] = colorTable[currentColorIndex][1];
+                tempPixels[index + 2] = colorTable[currentColorIndex][2];
 
                 pixelsArrLen++;
             }
@@ -538,11 +527,6 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
                 index += 3; 
             }
         } 
-    for(int i = 0; i < clrTableLen; i++){
-        free(clrTable[i]);
-    }
-    free(clrTable);
-
     }
 
     rewind(file); 
@@ -679,10 +663,9 @@ int main(int argc, char **argv) {
     if(containsR == true){ //print
         //logic
     }
-
-    if( copiedPixels != NULL){
+    if(copiedPixels != NULL){
         free(copiedPixels);
-    }   
+    }
     free(originalPixels);
     for(int i = 0; i < colorTableLen; i++){
         free(colorTable[i]);
