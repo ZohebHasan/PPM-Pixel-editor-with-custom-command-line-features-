@@ -358,25 +358,6 @@ void pastePixels(FILE *outputFile, int*copiedPixels, int inputFileType, int outp
             }
         }
 
-
-    //    // test for backup pixels
-    //     printf("Copied Pixel lne is: %d\n" , copiedPixelsLen);
-    //     printf("Copied Pixel are: \n");
-    //     for(int i = 0 ; i < copiedPixelsLen ; i++){
-    //         printf("%d ", copiedPixels[i]);
-    //     }
-    //     int temp = 0;
-    //     printf("\nPixels after pasting is: ");
-    //     for(int i = 0 ; i < (copiedFileWidth * copiedFileHeight * 3 * sizeof(char) ) ; i++){
-    //         if(temp % 9 == 0){
-    //             printf("\n");
-    //         }
-    //         // printf("Copied pixel[%d] is: %d\n ", i, copiedPixels[i]);
-    //         printf("%d ", originalPixels[i]);
-    //         temp++;
-    //     }
-    //     printf("\n"); 
-
         if (inputFileType == PPM) {
             colorTable = NULL;
             colorTableLen = 0;
@@ -464,12 +445,10 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
         fscanf(file, "%*s %d %d %*d", &width, &height);
         effectiveWidthRegion = (startingCol + copiedWidthRegion > width) ? width - startingCol : copiedWidthRegion;
         effectiveHeightRegion = (startingRow + copiedHeightRegion > height) ? height - startingRow : copiedHeightRegion;
-        printf("EffectiveWidthRegion is: %d and Effective Height Region is: %d\n", effectiveWidthRegion, effectiveHeightRegion);
         copiedPixelsLen = effectiveWidthRegion * effectiveHeightRegion * PIXEL_LENGTH;
         copiedPixels = (int*)malloc(copiedPixelsLen * sizeof(int));
         
         if (copiedPixels == NULL) {
-            printf("Unable to allocate space\n");
             return NULL;
         }
         for (int row = 0; row < height; row++) {
@@ -483,20 +462,6 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
                 } 
             }
         }
-
-    // // test for copied pixels
-    //     int temp = 0;
-    //     printf("\nCopied Pixels Length is: %d\n" ,copiedPixelsLen);
-    //     printf("Copied Pixels are: ");
-    //     for(int i = 0 ; i < copiedPixelsLen ; i++){
-    //         if(temp % 3 == 0){
-    //             printf("\n");
-    //         }
-    //         // printf("Copied pixel[%d] is: %d\n ", i, copiedPixels[i]);
-    //         printf("%d ", copiedPixels[i]);
-    //         temp++;
-    //     }
-    //     printf("\n");   
     } 
        
     
@@ -550,7 +515,6 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
 
         effectiveWidthRegion = (startingCol + copiedWidthRegion > width) ? width - startingCol : copiedWidthRegion;
         effectiveHeightRegion = (startingRow + copiedHeightRegion > height) ? height - startingRow : copiedHeightRegion;
-        printf("EffectiveWidthRegion is: %d and Effective Height Region is: %d\n", effectiveWidthRegion, effectiveHeightRegion);
         copiedPixelsLen = effectiveWidthRegion * effectiveHeightRegion * PIXEL_LENGTH;
         copiedPixels = (int*)malloc(copiedPixelsLen * sizeof(int));
         for (int row = startingRow; row < startingRow + effectiveHeightRegion; row++) {
@@ -561,21 +525,7 @@ int* copyPixels(FILE *file, int fileType, int startingRow, int startingCol, int 
                 copiedPixels[index + 2] = tempPixels[pixelIndex + 2];
                 index += 3; 
             }
-        }
-        // // test for copied pixels
-        // int temp = 0;
-        // printf("\nCopied Pixels Length is: %d\n" ,copiedPixelsLen);
-        // printf("Copied Pixels are: ");
-        // for(int i = 0 ; i < copiedPixelsLen ; i++){
-        //     if(temp % 3 == 0){
-        //         printf("\n");
-        //     }
-        //     // printf("Copied pixel[%d] is: %d\n ", i, copiedPixels[i]);
-        //     printf("%d ", copiedPixels[i]);
-        //     temp++;
-        // }
-        // printf("\n"); 
-
+        } 
     }
 
     rewind(file); 
@@ -713,6 +663,11 @@ int main(int argc, char **argv) {
         //logic
     }
     
+    free(originalPixels);
+    for(int i = 0; i < colorTableLen; i++){
+        free(colorTable[i]);
+    }
+    free(colorTable);
     
     return 0;
 }
