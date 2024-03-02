@@ -689,8 +689,8 @@ int main(int argc, char **argv) {
     FILE *inputFile = getFile(inputFilePath, 'r');
     FILE *outputFile = getFile(outputFilePath, 'w');
     loadAndSave(inputFile, outputFile, checkFileType(inputFilePath), checkFileType(outputFilePath));
-    fclose(inputFile);
-    fclose(outputFile);
-    
+    // fclose(inputFile);
+    // fclose(outputFile);
+
     return 0;
 }
