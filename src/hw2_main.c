@@ -30,7 +30,7 @@ int originalPixelsLen = 0;
 int effectiveWidthRegion, effectiveHeightRegion;
 int* copiedPixels; 
 
-bool containsRarg(int argumentsLength, char **argumentsArray);
+
 int checkArgs(int argumentsLength, char **argumentsArray);
 int checkFileType(char *filePath);
 bool splitArgument(char *argument, char *option);
@@ -140,25 +140,14 @@ FILE *getFile(char *filePath, char task ) { //gimmick
     return file;
 }
 
-bool containsRarg(int argumentsLength, char **argumentsArray) {
-    for (int i = 1; i < argumentsLength; i++) { 
-        if (strcmp(argumentsArray[i], "-r") == 0) {
-            if ((i + 1 >= argumentsLength) || (argumentsArray[i + 1][0] == '-')) {
-                return false;
-            }
-        }
-    }
-    return true; 
-}
-
 int checkArgs(int argumentsLength, char **argumentsArray) {
     int option;
     int argCount = 0;
     int unrecongnizedArg = false;
     int iCt = 0, oCt = 0; 
-    bool validInputFilePath = false, validInputFile = false,  validOutputFilePath = false, validCargument = false, validPargument = false, containsRargument = false, validRargument = false;
+    bool validInputFilePath = false, validInputFile = false,  validOutputFilePath = false, validCargument = false, validPargument = false, validRargument = false;
 
-    while ((option = getopt(argumentsLength, argumentsArray, "i:o:c:p:r")) != -1) {
+    while ((option = getopt(argumentsLength, argumentsArray, "i:o:c:p:r:")) != -1) {
         switch (option) {
             case 'i':
                 inputFilePath = optarg;
@@ -195,12 +184,6 @@ int checkArgs(int argumentsLength, char **argumentsArray) {
                 break;
             case 'r':     
                 containsR = true; 
-                containsRargument = containsRarg(argumentsLength, argumentsArray);
-                if(optarg == NULL){
-                    validRargument = false;
-                    argCount++;
-                    break;
-                }  
                 if(splitArgument(optarg, "r") == true){
                     validRargument = true;
                 }
@@ -219,9 +202,6 @@ int checkArgs(int argumentsLength, char **argumentsArray) {
         return MISSING_ARGUMENT;
     }
     else if(containsI && !validInputFilePath){
-        return MISSING_ARGUMENT;
-    }
-    else if(containsR && !containsRargument){
         return MISSING_ARGUMENT;
     }
     else if (unrecongnizedArg) {
