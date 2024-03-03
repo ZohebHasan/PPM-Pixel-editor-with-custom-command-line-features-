@@ -158,7 +158,7 @@ int checkArgs(int argumentsLength, char **argumentsArray) {
     int iCt = 0, oCt = 0; 
     bool validInputFilePath = false, validInputFile = false,  validOutputFilePath = false, validCargument = false, validPargument = false, containsRargument = false, validRargument = false;
 
-    while ((option = getopt(argumentsLength, argumentsArray, "i:o:c:p:r:")) != -1) {
+    while ((option = getopt(argumentsLength, argumentsArray, "i:o:c:p:r")) != -1) {
         switch (option) {
             case 'i':
                 inputFilePath = optarg;
@@ -195,7 +195,12 @@ int checkArgs(int argumentsLength, char **argumentsArray) {
                 break;
             case 'r':     
                 containsR = true; 
-                containsRargument = containsRarg(argumentsLength, argumentsArray); 
+                containsRargument = containsRarg(argumentsLength, argumentsArray);
+                if(optarg == NULL){
+                    validRargument = false;
+                    argCount++;
+                    break;
+                }  
                 if(splitArgument(optarg, "r") == true){
                     validRargument = true;
                 }
