@@ -272,8 +272,9 @@ void clonePixels(FILE *file, int fileType){
                 originalPixels[index] = r;
                 originalPixels[index + 1] = g;
                 originalPixels[index + 2] = b;
+                originalPixelsLen += 3;
             }
-            originalPixelsLen += 3;
+            
         }      
     } 
     else if (fileType == SBU) {
